@@ -4,12 +4,16 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.binance.api.client.BinanceApiClientFactory;
+import com.binance.api.client.BinanceApiRestClient;
+import com.binance.api.client.domain.account.Account;
 import com.coin.coin.models.Role;
 import com.coin.coin.models.User;
 import com.coin.coin.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -88,6 +92,26 @@ public class UserController {
         }else {
             throw new RuntimeException("Refresh token is missing");
         }
+    }
+
+    @GetMapping("/user/wallet")
+    public List getAccountBalances(){
+        BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("TWdALenejiWRJjzQTP4vDKFPcwsfsdVcbZE4Qs5O3K33BrgiCZuRxnNhnM5tHt5A", "Zpp1zcKffSd3YEsWP9R0B5Hw5nLunB3huivzwNWfAFJT7k4CQ2MyGOcD7MHLMRzT");
+        BinanceApiRestClient client = factory.newRestClient();
+
+        Account account = client.getAccount();
+        var filtered = account.getBalances().stream().filter(assetBalance -> !Objects.equals(assetBalance.getFree(), "0.00000000")).filter(assetBalance -> !Objects.equals(assetBalance.getFree(), "0.00") ).collect(Collectors.toList());
+        return filtered;
+    }
+
+    @GetMapping("/user/wallet/test")
+    public void getAccountBalancesTest(){
+        BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("aoENyRgtqNkeH5FVFqDqB0QoU4r6OR6XN187tI0KuwE2JZTWBaM4vYYwaU6nuX9p", "Ni7aHTlCMTht0qhxeUakmdnYc5WifkjQxJpBnidYwLapovcXvZ99qQm7gNLbsgaW",true,true);
+        BinanceApiRestClient client = factory.newRestClient();
+
+        Account account = client.getAccount();
+        System.out.println(account.getBalances());
+        System.out.println(account.getAssetBalance("ETH").getFree());
     }
 }
 
