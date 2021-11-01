@@ -1,6 +1,5 @@
 package com.coin.coin.services;
 
-import com.coin.coin.models.Exchange;
 import com.coin.coin.models.Role;
 import com.coin.coin.models.User;
 

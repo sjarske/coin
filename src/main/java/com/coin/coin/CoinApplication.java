@@ -1,7 +1,9 @@
 package com.coin.coin;
 
 import com.coin.coin.models.Role;
+import com.coin.coin.models.TradeRule;
 import com.coin.coin.models.User;
+import com.coin.coin.services.TradeRuleService;
 import com.coin.coin.services.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,7 +27,7 @@ public class CoinApplication {
 	}
 
 	@Bean
-	CommandLineRunner runner(UserService userService){
+	CommandLineRunner runner(UserService userService, TradeRuleService tradeRuleService){
 		return args -> {
 			userService.saveRole(new Role(null,"ROLE_USER"));
 			userService.saveRole(new Role(null,"ROLE_ADMIN"));
@@ -35,6 +37,12 @@ public class CoinApplication {
 
 			userService.addRoleToUser("Jane","ROLE_USER");
 			userService.addRoleToUser("John","ROLE_ADMIN");
+
+			tradeRuleService.saveTradeRule(new TradeRule(null,"sell with profit","BTC","price","increased by",5,100,"sell"));
+			tradeRuleService.saveTradeRule(new TradeRule(null,"buy in dip","BTC","price","decreased by",20,30,"buy"));
+
 		};
 	}
+
+
 }
