@@ -7,12 +7,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.domain.account.Account;
-import com.binance.api.client.domain.account.NewOrderResponse;
+import com.coin.coin.models.ExchangeToUserForm;
 import com.coin.coin.models.Role;
+import com.coin.coin.models.RoleToUserForm;
 import com.coin.coin.models.User;
 import com.coin.coin.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.var;
 import org.springframework.http.ResponseEntity;
@@ -106,16 +106,3 @@ public class UserController {
     }
 }
 
-@Data
-class RoleToUserForm{
-    private String username;
-    private String roleName;
-}
-
-@Data
-class ExchangeToUserForm{
-    private String username;
-    private String name;
-    private String apiKey;
-    private String secretKey;
-}

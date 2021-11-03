@@ -16,11 +16,11 @@ import static com.binance.api.client.domain.account.NewOrder.marketSell;
 public class DirectOrderController {
 
     @PostMapping("/directorder/buy")
-    public void placeBuyMarketOrder(@RequestBody BuyDirectForm data){
+    public void placeBuyMarketOrder(@RequestBody BuyDirectForm buyDirectFrom){
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("aoENyRgtqNkeH5FVFqDqB0QoU4r6OR6XN187tI0KuwE2JZTWBaM4vYYwaU6nuX9p", "Ni7aHTlCMTht0qhxeUakmdnYc5WifkjQxJpBnidYwLapovcXvZ99qQm7gNLbsgaW",true,true);
         BinanceApiRestClient client = factory.newRestClient();
-        System.out.println(data);
-        NewOrderResponse newOrderResponse = client.newOrder(marketBuy(data.getCoin()+"USDT", data.getAmount()));
+
+        NewOrderResponse newOrderResponse = client.newOrder(marketBuy(buyDirectFrom.getCoin()+"USDT", buyDirectFrom.getAmount()));
         System.out.println(newOrderResponse.getClientOrderId());
     }
 

@@ -1,5 +1,8 @@
 package com.coin.coin;
 
+import com.binance.api.client.BinanceApiClientFactory;
+import com.binance.api.client.BinanceApiWebSocketClient;
+import com.binance.api.client.domain.market.CandlestickInterval;
 import com.coin.coin.models.Role;
 import com.coin.coin.models.TradeRule;
 import com.coin.coin.models.User;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 public class CoinApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(CoinApplication.class, args);
 	}
 
