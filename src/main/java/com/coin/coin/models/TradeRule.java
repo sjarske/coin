@@ -18,8 +18,10 @@ public class TradeRule {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    //if
+    //create
+    private int coinValueOnCreate;
     private String coinName;
+    //if
     private String coinIndicator;
     private String coinCondition;
     private int ifPercentage;

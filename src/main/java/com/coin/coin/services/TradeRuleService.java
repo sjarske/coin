@@ -1,6 +1,6 @@
 package com.coin.coin.services;
 
-import com.binance.api.client.domain.account.Trade;
+
 import com.coin.coin.models.TradeRule;
 
 import java.util.List;
