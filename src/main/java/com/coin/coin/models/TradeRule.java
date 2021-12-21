@@ -28,4 +28,6 @@ public class TradeRule {
     //then
     private int thenPercentage;
     private String marketAction;
+    //final
+    private boolean completed;
 }

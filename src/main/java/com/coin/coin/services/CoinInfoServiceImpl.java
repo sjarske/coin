@@ -2,6 +2,9 @@ package com.coin.coin.services;
 
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
+import com.binance.api.client.domain.account.NewOrderResponse;
+import com.binance.api.client.domain.account.NewOrderResponseType;
+import com.binance.api.client.domain.account.Trade;
 import com.binance.api.client.domain.market.TickerStatistics;
 import com.coin.coin.models.CoinInfo;
 import com.coin.coin.models.TradeRule;
@@ -15,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.binance.api.client.domain.account.NewOrder.marketBuy;
+import static com.binance.api.client.domain.account.NewOrder.marketSell;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +49,7 @@ public class CoinInfoServiceImpl implements CoinInfoService{
 
     @Override
     @Scheduled(fixedDelay = 10000L)
-    public String checkTradeRules() {
+    public void checkTradeRules() {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("aoENyRgtqNkeH5FVFqDqB0QoU4r6OR6XN187tI0KuwE2JZTWBaM4vYYwaU6nuX9p", "Ni7aHTlCMTht0qhxeUakmdnYc5WifkjQxJpBnidYwLapovcXvZ99qQm7gNLbsgaW",true,true);
         BinanceApiRestClient client = factory.newRestClient();
 
@@ -52,20 +58,50 @@ public class CoinInfoServiceImpl implements CoinInfoService{
         List<TradeRule> tradeRules = tradeRuleRepo.findAll();
         for (TradeRule rule : tradeRules)
         {
-            if (rule.getCoinCondition().equals("increased by"))
-            {
-                int target = rule.getCoinValueOnCreate() % 100 * (100 + rule.getIfPercentage());
+            if (!rule.isCompleted()){
+                double targetValue = rule.getCoinValueOnCreate() * rule.getIfPercentage()/100;
+                double currentValue = Double.parseDouble(tickerStatistics.getLastPrice());
 
+                if (rule.getCoinCondition().equals("increased by"))
+                {
 
+                    if (currentValue >= targetValue){
+                        System.out.println("Condition for '"+rule.getName() +"' is met");
+                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        System.out.println("Selling...");
+                        NewOrderResponse newOrderResponse = client.newOrder(marketSell("BTCUSDT", "0.001").newOrderRespType(NewOrderResponseType.FULL));
+                        System.out.println(newOrderResponse.getClientOrderId());
+                        rule.setCompleted(true);
+
+                    }else
+                    {
+                        System.out.println("Condition for '"+rule.getName() +"' is not met");
+                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                    }
+                }
+
+                if (rule.getCoinCondition().equals("decreased by"))
+                {
+                    System.out.println(currentValue);
+                    System.out.println(targetValue);
+
+                    if (currentValue <= targetValue){
+                        System.out.println("Condition for '"+rule.getName() +"' is met");
+                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        System.out.println("Buying...");
+                        NewOrderResponse newOrderResponse = client.newOrder(marketBuy("BTCUSDT", "0.001").newOrderRespType(NewOrderResponseType.FULL));
+                        System.out.println(newOrderResponse.getClientOrderId());
+                        rule.setCompleted(true);
+
+                    }else
+                    {
+                        System.out.println("Condition for '"+rule.getName() +"' is not met");
+                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                    }
+                }
             }
-
-            if (rule.getCoinCondition()=="decreased by")
-            {
-
-            }
-
         }
-        return "no updates";
+        System.out.println("No further updates");
     }
 
 
