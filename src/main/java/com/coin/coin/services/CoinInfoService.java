@@ -7,5 +7,4 @@ import java.util.List;
 public interface CoinInfoService {
     void getAndSaveCoinInfo();
     List<CoinInfo> getCoinInfos();
-    void checkTradeRules();
 }

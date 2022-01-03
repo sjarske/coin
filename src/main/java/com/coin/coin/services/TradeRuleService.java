@@ -9,4 +9,5 @@ public interface TradeRuleService {
     TradeRule saveTradeRule(TradeRule tradeRule);
     List<TradeRule> getTradeRules();
     TradeRule getTradeRule(String name);
+    void checkTradeRules();
 }
