@@ -4,14 +4,16 @@ import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.domain.account.NewOrderResponse;
 import com.binance.api.client.domain.account.NewOrderResponseType;
-import com.binance.api.client.domain.account.Trade;
 import com.binance.api.client.domain.market.TickerStatistics;
 import com.coin.coin.models.CoinInfo;
 import com.coin.coin.models.TradeRule;
+import com.coin.coin.models.ws.Greeting;
 import com.coin.coin.repos.CoinInfoRepo;
 import com.coin.coin.repos.TradeRuleRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +32,11 @@ public class CoinInfoServiceImpl implements CoinInfoService{
     private final CoinInfoRepo coinInfoRepo;
     private final TradeRuleRepo tradeRuleRepo;
 
+    @Autowired
+    SimpMessagingTemplate template;
+
     @Override
-    @Scheduled(fixedDelayString = "PT1M")
+    //@Scheduled(fixedDelayString = "PT1M")
     public void getAndSaveCoinInfo() {
             BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
             BinanceApiRestClient client = factory.newRestClient();
@@ -46,6 +51,11 @@ public class CoinInfoServiceImpl implements CoinInfoService{
     public List<CoinInfo> getCoinInfos() {
         return coinInfoRepo.findAll();
     }
+
+    public void send(String message) {
+        template.convertAndSend("/topic/greetings", new Greeting(message));
+    }
+
 
     @Override
     @Scheduled(fixedDelay = 10000L)
@@ -66,42 +76,53 @@ public class CoinInfoServiceImpl implements CoinInfoService{
                 {
 
                     if (currentValue >= targetValue){
-                        System.out.println("Condition for '"+rule.getName() +"' is met");
-                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
-                        System.out.println("Selling...");
+                        send("Condition for '"+rule.getName() +"' is met");
+                        //System.out.println("Condition for '"+rule.getName() +"' is met");
+                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        //System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send("Selling...");
+                        //System.out.println("Selling...");
                         NewOrderResponse newOrderResponse = client.newOrder(marketSell("BTCUSDT", "0.001").newOrderRespType(NewOrderResponseType.FULL));
-                        System.out.println(newOrderResponse.getClientOrderId());
+                        send(newOrderResponse.getClientOrderId());
+                        //System.out.println(newOrderResponse.getClientOrderId());
                         rule.setCompleted(true);
 
                     }else
                     {
-                        System.out.println("Condition for '"+rule.getName() +"' is not met");
-                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send("Condition for '"+rule.getName() +"' is not met");
+                        //System.out.println("Condition for '"+rule.getName() +"' is not met");
+                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        //System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
                     }
                 }
 
                 if (rule.getCoinCondition().equals("decreased by"))
                 {
-                    System.out.println(currentValue);
-                    System.out.println(targetValue);
-
                     if (currentValue <= targetValue){
-                        System.out.println("Condition for '"+rule.getName() +"' is met");
-                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
-                        System.out.println("Buying...");
+                        send("Condition for '"+rule.getName() +"' is met");
+                        //System.out.println("Condition for '"+rule.getName() +"' is met");
+                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
+                       // System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send("Buying...");
+                        //System.out.println("Buying...");
+
                         NewOrderResponse newOrderResponse = client.newOrder(marketBuy("BTCUSDT", "0.001").newOrderRespType(NewOrderResponseType.FULL));
-                        System.out.println(newOrderResponse.getClientOrderId());
+                        send(newOrderResponse.getClientOrderId());
+                        //System.out.println(newOrderResponse.getClientOrderId());
                         rule.setCompleted(true);
 
                     }else
                     {
-                        System.out.println("Condition for '"+rule.getName() +"' is not met");
-                        System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send("Condition for '"+rule.getName() +"' is not met");
+                        //System.out.println("Condition for '"+rule.getName() +"' is not met");
+                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        //System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
                     }
                 }
             }
         }
-        System.out.println("No further updates");
+        send("No further updates");
+        //System.out.println("No further updates");
     }
 
 
