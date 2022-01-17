@@ -7,6 +7,7 @@ import com.coin.coin.models.User;
 import com.coin.coin.repos.ExchangeRepo;
 import com.coin.coin.repos.RoleRepo;
 import com.coin.coin.repos.UserRepo;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Service @RequiredArgsConstructor @Transactional @Slf4j
+@Service @RequiredArgsConstructor
+@Transactional @Slf4j
 public class UserServiceImpl implements UserService , UserDetailsService {
 
     private final UserRepo userRepo;
