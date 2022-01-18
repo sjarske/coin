@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.domain.account.Account;
+import com.binance.api.client.domain.account.AssetBalance;
 import com.coin.coin.models.ExchangeToUserForm;
 import com.coin.coin.models.Role;
 import com.coin.coin.models.RoleToUserForm;
@@ -53,13 +54,13 @@ public class UserController {
     }
 
     @PostMapping("/role/addtouser")
-    public ResponseEntity<?> saveRole(@RequestBody RoleToUserForm form){
+    public ResponseEntity saveRole(@RequestBody RoleToUserForm form){
         userService.addRoleToUser(form.getUsername(), form.getRoleName());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/exchange/addtouser")
-    public ResponseEntity<?> saveExchange(@RequestBody ExchangeToUserForm form){
+    public ResponseEntity saveExchange(@RequestBody ExchangeToUserForm form){
         userService.addExchangeToUser(form.getUsername(), form.getName(), form.getApiKey(), form.getSecretKey());
         return ResponseEntity.ok().build();
     }
@@ -69,22 +70,21 @@ public class UserController {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader !=null && authorizationHeader.startsWith("Bearer ")){
             try {
-                String refresh_token = authorizationHeader.substring("Bearer ".length());
+                String refreshToken = authorizationHeader.substring("Bearer ".length());
                 Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
                 JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                DecodedJWT decodedJWT = verifier.verify(refreshToken);
                 String username = decodedJWT.getSubject();
                 User user = userService.getUser(username);
-                String acces_token = JWT.create().withSubject(user.getUsername()).withExpiresAt(new Date(System.currentTimeMillis() +10 * 60 * 1000)).withIssuer(request.getRequestURL().toString()).withClaim("roles",user.getRoles().stream().map(Role::getName).collect(Collectors.toList())).sign(algorithm);
+                String accesToken = JWT.create().withSubject(user.getUsername()).withExpiresAt(new Date(System.currentTimeMillis() +10 * 60 * 1000)).withIssuer(request.getRequestURL().toString()).withClaim("roles",user.getRoles().stream().map(Role::getName).collect(Collectors.toList())).sign(algorithm);
                 Map<String,String> tokens = new HashMap<>();
-                tokens.put("acces_token",acces_token);
-                tokens.put("refresh_token",refresh_token);
+                tokens.put("acces_token",accesToken);
+                tokens.put("refresh_token",refreshToken);
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(),tokens);
             }catch (Exception e){
                 response.setHeader("error", e.getMessage());
                 response.setStatus(FORBIDDEN.value());
-                //response.sendError(FORBIDDEN.value());
                 Map<String,String> error = new HashMap<>();
                 error.put("error_message",e.getMessage());
                 response.setContentType(APPLICATION_JSON_VALUE);
@@ -96,13 +96,12 @@ public class UserController {
     }
 
     @GetMapping("/user/wallet")
-    public List getAccountBalancesTest(){
+    public List<AssetBalance> getAccountBalancesTest(){
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("aoENyRgtqNkeH5FVFqDqB0QoU4r6OR6XN187tI0KuwE2JZTWBaM4vYYwaU6nuX9p", "Ni7aHTlCMTht0qhxeUakmdnYc5WifkjQxJpBnidYwLapovcXvZ99qQm7gNLbsgaW",true,true);
         BinanceApiRestClient client = factory.newRestClient();
 
         Account account = client.getAccount();
-        var filtered = account.getBalances().stream().filter(assetBalance -> !Objects.equals(assetBalance.getFree(), "0.00000000")).filter(assetBalance -> !Objects.equals(assetBalance.getFree(), "0.00") ).collect(Collectors.toList());
-        return filtered;
+        return account.getBalances().stream().filter(assetBalance -> !Objects.equals(assetBalance.getFree(), "0.00000000")).filter(assetBalance -> !Objects.equals(assetBalance.getFree(), "0.00") ).collect(Collectors.toList());
     }
 }
 

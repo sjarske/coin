@@ -18,7 +18,6 @@ public class GreetingController {
     public Greeting greeting(Message message) {
         if (message.getName().contains("pair:")){
             String content = message.getName().replaceFirst("pair:", "");
-            System.out.println(content);
             BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
             BinanceApiRestClient client = factory.newRestClient();
 

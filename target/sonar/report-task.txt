@@ -2,5 +2,5 @@ projectKey=coin
 serverUrl=http://localhost:9000
 serverVersion=9.1.0.47736
 dashboardUrl=http://localhost:9000/dashboard?id=coin
-ceTaskId=AX5jgVZXaJyd5yqekvBd
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AX5jgVZXaJyd5yqekvBd
+ceTaskId=AX5u0Vah5sqV7nw1tc3Z
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AX5u0Vah5sqV7nw1tc3Z

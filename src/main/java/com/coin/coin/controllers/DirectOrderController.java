@@ -20,8 +20,7 @@ public class DirectOrderController {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("aoENyRgtqNkeH5FVFqDqB0QoU4r6OR6XN187tI0KuwE2JZTWBaM4vYYwaU6nuX9p", "Ni7aHTlCMTht0qhxeUakmdnYc5WifkjQxJpBnidYwLapovcXvZ99qQm7gNLbsgaW",true,true);
         BinanceApiRestClient client = factory.newRestClient();
 
-        NewOrderResponse newOrderResponse = client.newOrder(marketBuy(buyDirectFrom.getCoin()+"USDT", buyDirectFrom.getAmount()));
-        System.out.println(newOrderResponse.getClientOrderId());
+        client.newOrder(marketBuy(buyDirectFrom.getCoin()+"USDT", buyDirectFrom.getAmount()));
     }
 
     @PostMapping("/directorder/sell")
@@ -29,7 +28,6 @@ public class DirectOrderController {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("aoENyRgtqNkeH5FVFqDqB0QoU4r6OR6XN187tI0KuwE2JZTWBaM4vYYwaU6nuX9p", "Ni7aHTlCMTht0qhxeUakmdnYc5WifkjQxJpBnidYwLapovcXvZ99qQm7gNLbsgaW",true,true);
         BinanceApiRestClient client = factory.newRestClient();
 
-        NewOrderResponse newOrderResponse = client.newOrder(marketSell(buyDirectFrom.getCoin()+"USDT", buyDirectFrom.getAmount()));
-        System.out.println(newOrderResponse.getClientOrderId());
+        client.newOrder(marketSell(buyDirectFrom.getCoin()+"USDT", buyDirectFrom.getAmount()));
     }
 }

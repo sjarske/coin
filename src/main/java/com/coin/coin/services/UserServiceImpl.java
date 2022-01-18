@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
             log.error("User found in the database: {}", username);
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> {authorities.add(new SimpleGrantedAuthority(role.getName()));});
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
         return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),authorities);
     }
 
@@ -66,13 +66,13 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     }
 
     @Override
-    public void addExchangeToUser(String username, String name, String APIKey, String secretKey) {
+    public void addExchangeToUser(String username, String name, String ApiKey, String secretKey) {
         log.info("Adding exchange {} to user {}",name,username);
         User user = userRepo.findByUsername(username);
         Exchange exchange = new Exchange();
         exchange.setId(null);
         exchange.setName(name);
-        exchange.setApiKey(APIKey);
+        exchange.setApiKey(ApiKey);
         exchange.setSecretKey(secretKey);
         user.getExchanges().add(exchange);
     }

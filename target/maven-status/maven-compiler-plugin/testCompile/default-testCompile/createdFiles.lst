@@ -1,2 +1,3 @@
-com\coin\coin\CoinApplicationTests.class
+com\coin\coin\services\TradeRuleServiceImplTest.class
+com\coin\coin\controllers\UserControllerTest.class
 com\coin\coin\services\UserServiceImplTest.class

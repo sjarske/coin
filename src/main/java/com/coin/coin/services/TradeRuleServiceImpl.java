@@ -50,6 +50,12 @@ public class TradeRuleServiceImpl implements TradeRuleService{
         template.convertAndSend("/topic/greetings", new Greeting(message));
     }
 
+    private String btcusdt= "BTCUSDT";
+    private String condition= "Condition for '";
+    private String target =" -- Target value: ";
+    private String current = "Current value: ";
+
+
 
     @Override
     @Scheduled(fixedDelay = 10000L)
@@ -57,60 +63,47 @@ public class TradeRuleServiceImpl implements TradeRuleService{
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance("aoENyRgtqNkeH5FVFqDqB0QoU4r6OR6XN187tI0KuwE2JZTWBaM4vYYwaU6nuX9p", "Ni7aHTlCMTht0qhxeUakmdnYc5WifkjQxJpBnidYwLapovcXvZ99qQm7gNLbsgaW",true,true);
         BinanceApiRestClient client = factory.newRestClient();
 
-        TickerStatistics tickerStatistics = client.get24HrPriceStatistics("BTCUSDT");
+        TickerStatistics tickerStatistics = client.get24HrPriceStatistics(btcusdt);
 
         List<TradeRule> tradeRules = tradeRuleRepo.findAll();
         for (TradeRule rule : tradeRules)
         {
             if (!rule.isCompleted()){
-                double targetValue = rule.getCoinValueOnCreate() * rule.getIfPercentage()/100;
+                double targetValue = (double)rule.getCoinValueOnCreate() * rule.getIfPercentage()/100;
                 double currentValue = Double.parseDouble(tickerStatistics.getLastPrice());
 
                 if (rule.getCoinCondition().equals("increased by"))
                 {
 
                     if (currentValue >= targetValue){
-                        send("Condition for '"+rule.getName() +"' is met");
-                        //System.out.println("Condition for '"+rule.getName() +"' is met");
-                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
-                        //System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send(condition+rule.getName() +"' is met");
+                        send(current+currentValue+target+targetValue);
                         send("Selling...");
-                        //System.out.println("Selling...");
-                        NewOrderResponse newOrderResponse = client.newOrder(marketSell("BTCUSDT", "0.001").newOrderRespType(NewOrderResponseType.FULL));
+                        NewOrderResponse newOrderResponse = client.newOrder(marketSell(btcusdt, "0.001").newOrderRespType(NewOrderResponseType.FULL));
                         send(newOrderResponse.getClientOrderId());
-                        //System.out.println(newOrderResponse.getClientOrderId());
                         rule.setCompleted(true);
 
                     }else
                     {
-                        send("Condition for '"+rule.getName() +"' is not met");
-                        //System.out.println("Condition for '"+rule.getName() +"' is not met");
-                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
-                        //System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send(condition+rule.getName() +"' is not met");
+                        send(current+currentValue+target+targetValue);
                     }
                 }
 
                 if (rule.getCoinCondition().equals("decreased by"))
                 {
                     if (currentValue <= targetValue){
-                        send("Condition for '"+rule.getName() +"' is met");
-                        //System.out.println("Condition for '"+rule.getName() +"' is met");
-                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
-                        // System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send(condition+rule.getName() +"' is met");
+                        send(current+currentValue+target+targetValue);
                         send("Buying...");
-                        //System.out.println("Buying...");
-
-                        NewOrderResponse newOrderResponse = client.newOrder(marketBuy("BTCUSDT", "0.001").newOrderRespType(NewOrderResponseType.FULL));
+                        NewOrderResponse newOrderResponse = client.newOrder(marketBuy(btcusdt, "0.001").newOrderRespType(NewOrderResponseType.FULL));
                         send(newOrderResponse.getClientOrderId());
-                        //System.out.println(newOrderResponse.getClientOrderId());
                         rule.setCompleted(true);
 
                     }else
                     {
-                        send("Condition for '"+rule.getName() +"' is not met");
-                        //System.out.println("Condition for '"+rule.getName() +"' is not met");
-                        send("Current value: "+currentValue+" -- Target value: "+targetValue);
-                        //System.out.println("Current value: "+currentValue+" -- Target value: "+targetValue);
+                        send(condition+rule.getName() +"' is not met");
+                        send(current+currentValue+target+targetValue);
                     }
                 }
             }
