@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -53,11 +54,11 @@ class UserServiceImplTest {
 
     @Test
     void addExchangeToUser() {
-        List<Exchange> exchanges = new ArrayList<>();
+        Collection<Exchange> exchanges = new ArrayList<>();
 
-        User user = new User(null,"John","John","12345",null,exchanges);
+        User user = new User(null,"John","John","12345",null, exchanges);
         underTest.saveUser(user);
-        underTest.addExchangeToUser("John","Binance","apikeyhere","secretkeyhere");
+        underTest.addExchangeToUser(user.getUsername(),"Binance","apikeyhere","secretkeyhere");
         assertThat(user.getExchanges().stream().count()==1);
     }
 

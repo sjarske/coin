@@ -48,6 +48,7 @@ class TradeRuleServiceImplTest {
     void getTradeRule() {
         TradeRule tradeRule = new TradeRule(null,"testrule",100,"btc","price","1",100,100,"sell",false);
         underTest.saveTradeRule(tradeRule);
+
         underTest.getTradeRule(tradeRule.getName());
         verify(tradeRuleRepo).findByName("testrule");
     }
